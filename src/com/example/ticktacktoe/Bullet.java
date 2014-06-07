@@ -4,61 +4,41 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.LinkedList;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-public class Ship {
-	public float x = 0.0f;
-	public float y = 0.0f;
-	private float[] model;
-	public float[] modelMatrix = new float[16];
-	public float[] projectionMatrix = new float[16];
-	public float angle = 90.0f;
+public class Bullet {
+
+	private int program = 0;
+	private float angle=0.0f;
+	private float speed=0.0f;
+	private float x = 0.0f;
+	private float y = 0.0f;
 	private FloatBuffer vertexBuffer;
 	private ShortBuffer drawListBuffer;
-	public float speed = 0.07f;
-	private LinkedList<Bullet> list = new LinkedList<Bullet>();
 	private short drawOrder[];
+	public long timestamp= System.currentTimeMillis();
+	public float[] projectionMatrix = new float[16];
+	public float[] modelMatrix = new float[16];
+	private float[] model=new float[4];
+	private float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
 
-	float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
-	int vsh, fsh;
-	int program;
-	private final String vertexShaderCode =
-
-	"uniform mat4 uMVPMatrix;" + "attribute vec4 vPosition;" + "void main() {" +
-
-	"  gl_Position = uMVPMatrix * vPosition;" + "}";
-
-	private final String fragmentShaderCode = "precision mediump float;"
-			+ "uniform vec4 vColor;" + "void main() {"
-			+ "  gl_FragColor = vColor;" + "}";
-
-	Ship() {
-		initialize(0, 0);
-
-	}
-
-	Ship(float x, float y) {
-		initialize(x, y);
-
+	Bullet(int program, float angle, float speed) {
+		this.program = program;
+		this.angle = angle;
+		this.speed = speed;
 	}
 
 	public void initialize(float x, float y) {
-		float[] test = {
-
-		0.5f + x, 0.75f + y, 0.0f, 0.0f + x, 0.0f + y, 0.0f, 0.5f + x,
-				0.5f + y, 0.0f, 0.5f + x, 0.75f + y, 0.0f, 1.0f + x, 0.0f + y,
-				0.0f, 0.5f + x, 0.5f + y, 0.0f,
-
-		};
-		short[] t = { 0, 1, 2, 3, 4, 5, 6 };
+		float[] vector = { 0.5f + x, 0.75f + y, 0.0f,
+						   0.5f + x, 0.9f + y, 0.0f };
+		short[] t = { 0, 1};
 		drawOrder = t;
-		this.model = test;
+		this.model = vector;
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(
 		// (# of coordinate values * 4 bytes per float)
-				test.length * 4);
+				vector.length * 4);
 		byteBuffer = byteBuffer.order(ByteOrder.nativeOrder());
 		vertexBuffer = byteBuffer.asFloatBuffer();
 		vertexBuffer.put(model);
@@ -72,38 +52,11 @@ public class Ship {
 		drawListBuffer.put(drawOrder);
 		drawListBuffer.position(0);
 
-		this.fsh = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
-				fragmentShaderCode);
-		this.vsh = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-				vertexShaderCode);
-
-		this.program = GLES20.glCreateProgram(); // create empty OpenGL Program
-		GLES20.glAttachShader(program, vsh); // add the vertex shader to program
-		GLES20.glAttachShader(program, fsh); // add the fragment shader to
-												// program
-		GLES20.glLinkProgram(program);
-
 	}
-
-	public void shoot() {
-		if (list.size() <= 20) {
-
-			Bullet b = new Bullet(program, angle, speed + 0.09f);
-			b.initialize(x, y);
-			b.projectionMatrix = this.projectionMatrix;
-			list.add(b);
-		}
-	}
-
-	public void draw() {
-
-		Bullet temp = list.peek();
-		if (temp != null) {
-			if (System.currentTimeMillis() - temp.timestamp >= 2000)
-				list.remove(temp);
-			for (Bullet bullet : list)
-				bullet.draw();
-		}
+	public void draw(){
+		if(program==0)
+			return;
+		
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.setLookAtM(modelMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
@@ -111,9 +64,10 @@ public class Ship {
 
 		x += (float) (speed * Math.cos(angle * 0.0174532925));
 		y += (float) (speed * Math.sin(angle * 0.0174532925));
-
-		Matrix.translateM(modelMatrix, 0, x + 0.5f, y + 0.5f, 0.0f);
-		Matrix.rotateM(modelMatrix, 0, angle - 90, 0, 0, 1);
+		
+		
+		Matrix.translateM(modelMatrix, 0, x+0.5f, y+0.75f , 0.0f);
+		Matrix.rotateM(modelMatrix, 0, angle, 0, 0, 1);
 		Matrix.translateM(modelMatrix, 0, -0.5f, -0.5f, 0.0f);
 
 		float[] mvpMatrix = new float[16];
@@ -127,7 +81,7 @@ public class Ship {
 		// Enable a handle to the triangle vertices
 		GLES20.glEnableVertexAttribArray(mPositionHandle);
 
-		// Prepare the triangle coordinate data
+		// Prepare the LINE coordinate data
 		GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT,
 				false, 12, vertexBuffer);
 
@@ -143,10 +97,10 @@ public class Ship {
 		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 		// MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
+		GLES20.glDrawElements(GLES20.GL_LINES, drawOrder.length,
 				GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
 
 		GLES20.glDisableVertexAttribArray(mPositionHandle);
-
 	}
+
 }
