@@ -14,7 +14,7 @@ public class Ship {
 	public float[]modelViewMatrix=new float[16];
 	private FloatBuffer vertexBuffer;
 	private ShortBuffer drawListBuffer;
-	public float speed=0.01f;
+	public float speed=0.03f;
 	private short drawOrder[];
 	private Drawer drawer=new Drawer();
 	 float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
@@ -83,14 +83,19 @@ public class Ship {
 
 	public void initialize(float x,float y){
 		float[]test={
+				
+		0.5f+x,0.75f+y,0.0f,		
 		0.0f+x,0.0f+y,0.0f,
 		0.5f+x,0.5f+y,0.0f,
-		0.5f+x,0.75f+y,0.0f,
+		
 		
 		
 		0.5f+x,0.75f+y,0.0f,
 		1.0f+x,0.0f+y,0.0f,
 		0.5f+x,0.5f+y,0.0f,
+		
+		
+		
 		};
 		short[] t={0,1,2,3,4,5,6};
 		drawOrder=t;

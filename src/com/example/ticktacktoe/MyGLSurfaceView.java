@@ -55,12 +55,13 @@ public class MyGLSurfaceView extends GLSurfaceView  {
 		if(e.getAction()==MotionEvent.ACTION_MOVE){
 			float differenceX =Math.abs(x-prevX);
 			float differenceY=Math.abs(y-prevY);
-			if(differenceX>differenceY-5)
+			if(differenceX>differenceY-10){
 			if(differenceX>10)
 				swipeLeft();
 			else if(differenceX<10)
 				swipeRight();
 			else shoot();
+			}else{prevY=prevX=0;}
 			prevX=x;
 			prevY=y;
 		}

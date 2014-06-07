@@ -16,7 +16,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     float []scratch=new float[16];
 	private Board board=new Board();
 	private Ship ship;
-	private float angle=-90.0f;
+	private float angle=90.0f;
 	private Square square;
 
 	@Override
@@ -25,50 +25,40 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 		 GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		 ship=new Ship();
 		 //square=new Square();
+		 
 	}
 
 	@Override
 	public void onDrawFrame(GL10 unused) {
 		
 		try {
-			Thread.sleep(60);
+			Thread.sleep(45);
 	
 		// Draw background color
+		
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
+		
+		
+		Matrix.setIdentityM(modelViewMatrix, 0);
 		// Set the camera position (View matrix)
 		Matrix.setLookAtM(ship.modelViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+		
 
-		ship.x+=ship.speed*Math.cos(angle);
-    	ship.y+=ship.speed*Math.sin(angle);
-    	ship.updatePosition();
+		Matrix.scaleM(ship.modelViewMatrix, 0, 0.25f, 0.25f, 0);
+
+		ship.x+=(float) (ship.speed*Math.cos(angle*0.0174532925));
+    	ship.y+=(float) (ship.speed*Math.sin(angle*0.0174532925));
     	
-		Matrix.scaleM(ship.modelViewMatrix, 0, 0.5f, 0.5f, 0);
+    	
+		Matrix.translateM(ship.modelViewMatrix, 0, ship.x+0.5f, ship.y+0.5f, 0.0f);
+		Matrix.rotateM(ship.modelViewMatrix, 0, angle-90, 0, 0, 1);
+		Matrix.translateM(ship.modelViewMatrix, 0, -0.5f, -0.5f, 0.0f);
 		
-		//Matrix.translateM(ship.modelViewMatrix, 0,ship.x, ship.y, 0);
 		
-		// Calculate the projection and view transformation
-		
-		Matrix.rotateM(ship.modelViewMatrix, 0, angle, 0, 0, 1);
+
 		Matrix.multiplyMM(finalMatrix, 0, projectionViewMatrix, 0, ship.modelViewMatrix, 0);
 		
-		//Matrix.setRotateM(mRotationMatrix, 0, angle, 0, 0, 0.0f);
-	//	Matrix.
-		// Create a rotation
 
-		// Use the following code to generate constant rotation.
-		// Leave this code out when using TouchEvents.
-		// long time = SystemClock.uptimeMillis() % 4000L;
-		// float angle = 0.090f * ((int) time);
-
-		//
-
-		// Combine the rotation matrix with the projection and camera view
-		// Note that the mMVPMatrix factor *must be first* in order
-		// for the matrix multiplication product to be correct.
-		//Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
-		
-		// Matrix.multiplyMM(scratch, 0, finalMatrix, 0, mRotationMatrix, 0);
 		ship.draw(finalMatrix);
 		
 		} catch (InterruptedException e) {
