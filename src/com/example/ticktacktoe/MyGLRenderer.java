@@ -1,16 +1,20 @@
 package com.example.ticktacktoe;
 
+import java.util.LinkedList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.opengl.*;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.util.Log;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = "MyGLRenderer";
 	private float[] modelViewMatrix = new float[16];
 	private float[] projectionViewMatrix = new float[16];
-	
+	private LinkedList <Enemy> enemyList=new LinkedList<Enemy>();
 	private float ratio = 1.0f;
 
 
@@ -83,6 +87,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 	 * @throws  
 	 */
 	
+	public void randomEnemy(){
+		
+		
+	}
 	public void shoot() {
 		ship.shoot();
 	}

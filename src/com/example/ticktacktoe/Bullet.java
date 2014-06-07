@@ -17,6 +17,7 @@ public class Bullet {
 	private float y = 0.0f;
 	private FloatBuffer vertexBuffer;
 	private ShortBuffer drawListBuffer;
+	public float scale=0.25f;
 	private short drawOrder[];
 	public long timestamp= System.currentTimeMillis();
 	public float[] projectionMatrix = new float[16];
@@ -60,7 +61,7 @@ public class Bullet {
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.setLookAtM(modelMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
-		Matrix.scaleM(modelMatrix, 0, 0.25f, 0.25f, 0);
+		Matrix.scaleM(modelMatrix, 0, scale, scale, 0);
 
 		x += (float) (speed * Math.cos(angle * 0.0174532925));
 		y += (float) (speed * Math.sin(angle * 0.0174532925));

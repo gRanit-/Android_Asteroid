@@ -13,6 +13,7 @@ public class Ship {
 	public float x = 0.0f;
 	public float y = 0.0f;
 	private float[] model;
+	public float scale=0.25f;
 	public float[] modelMatrix = new float[16];
 	public float[] projectionMatrix = new float[16];
 	public float angle = 90.0f;
@@ -107,7 +108,7 @@ public class Ship {
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.setLookAtM(modelMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
-		Matrix.scaleM(modelMatrix, 0, 0.25f, 0.25f, 0);
+		Matrix.scaleM(modelMatrix, 0, scale, scale, 0);
 
 		x += (float) (speed * Math.cos(angle * 0.0174532925));
 		y += (float) (speed * Math.sin(angle * 0.0174532925));
