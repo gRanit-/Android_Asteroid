@@ -9,7 +9,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 public class Bullet {
-
+	//public final float PI =;
 	private int program = 0;
 	private float angle=0.0f;
 	private float speed=0.0f;
@@ -32,8 +32,11 @@ public class Bullet {
 	}
 
 	public void initialize(float x, float y) {
-		float[] vector = { 0.5f + x, 0.75f + y, 0.0f,
-						   0.5f + x, 0.9f + y, 0.0f };
+		this.x=x;
+		this.y=y;
+		float[] vector = {0.5f, 0.75f, 0.0f,
+						
+				0.5f, 0.5f, 0.0f, };
 		short[] t = { 0, 1};
 		drawOrder = t;
 		this.model = vector;
@@ -58,23 +61,29 @@ public class Bullet {
 		if(program==0)
 			return;
 		
+		//Matrix Manipulation
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.setLookAtM(modelMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
 		Matrix.scaleM(modelMatrix, 0, scale, scale, 0);
-
-		x += (float) (speed * Math.cos(angle * 0.0174532925));
-		y += (float) (speed * Math.sin(angle * 0.0174532925));
+		
+		x += (float) (speed * Math.cos(angle * 3.141592653589793238462643383279/180));
+		y += (float) (speed * Math.sin(angle * 3.141592653589793238462643383279/180));
 		
 		
-		Matrix.translateM(modelMatrix, 0, x+0.5f, y+0.75f , 0.0f);
-		Matrix.rotateM(modelMatrix, 0, angle, 0, 0, 1);
-		Matrix.translateM(modelMatrix, 0, -0.5f, -0.5f, 0.0f);
+		Matrix.translateM(modelMatrix, 0, x+0.5f , y+0.5f, 0.0f);
+		Matrix.rotateM(modelMatrix, 0, angle-90, 0, 0, 1);
+		Matrix.translateM(modelMatrix, 0, -0.5f , -0.5f, 0.0f);
 
+	
+		
 		float[] mvpMatrix = new float[16];
 
 		Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, modelMatrix, 0);
 
+		
+		//Drawing- input to shaders
+		
 		GLES20.glUseProgram(program);
 
 		int mPositionHandle = GLES20.glGetAttribLocation(program, "vPosition");

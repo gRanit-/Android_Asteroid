@@ -1,5 +1,6 @@
 package com.example.ticktacktoe;
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -20,7 +21,9 @@ public class Ship {
 	private FloatBuffer vertexBuffer;
 	private ShortBuffer drawListBuffer;
 	public float speed = 0.07f;
-	private LinkedList<Bullet> list = new LinkedList<Bullet>();
+	//LinkedList <Bullet>list=new LinkedList<Bullet>();
+
+	private CopyOnWriteArrayList<Bullet> list = new CopyOnWriteArrayList<Bullet>();
 	private short drawOrder[];
 
 	float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
@@ -47,11 +50,18 @@ public class Ship {
 	}
 
 	public void initialize(float x, float y) {
+		this.x=x;
+		this.y=y;
+		
 		float[] test = {
 
-		0.5f + x, 0.75f + y, 0.0f, 0.0f + x, 0.0f + y, 0.0f, 0.5f + x,
-				0.5f + y, 0.0f, 0.5f + x, 0.75f + y, 0.0f, 1.0f + x, 0.0f + y,
-				0.0f, 0.5f + x, 0.5f + y, 0.0f,
+		0.5f + x, 0.75f + y, 0.0f,
+		0.0f + x, 0.0f + y, 0.0f,
+		0.5f + x, 0.5f + y, 0.0f,
+		
+		0.5f + x, 0.75f + y, 0.0f,
+		1.0f + x, 0.0f + y, 0.0f
+		, 0.5f + x, 0.5f + y, 0.0f,
 
 		};
 		short[] t = { 0, 1, 2, 3, 4, 5, 6 };
@@ -89,7 +99,7 @@ public class Ship {
 	public void shoot() {
 		if (list.size() <= 20) {
 
-			Bullet b = new Bullet(program, angle, speed + 0.09f);
+			Bullet b = new Bullet(program, angle, speed+0.09f);
 			b.initialize(x, y);
 			b.projectionMatrix = this.projectionMatrix;
 			list.add(b);
@@ -97,11 +107,14 @@ public class Ship {
 	}
 
 	public void draw() {
-
-		Bullet temp = list.peek();
+		
+		
+		Bullet temp=null;
+		if(list.size()>0)
+			temp=list.get(0);
 		if (temp != null) {
 			if (System.currentTimeMillis() - temp.timestamp >= 2000)
-				list.remove(temp);
+				list.remove(0);
 			for (Bullet bullet : list)
 				bullet.draw();
 		}
@@ -110,8 +123,8 @@ public class Ship {
 
 		Matrix.scaleM(modelMatrix, 0, scale, scale, 0);
 
-		x += (float) (speed * Math.cos(angle * 0.0174532925));
-		y += (float) (speed * Math.sin(angle * 0.0174532925));
+		x += (float) (speed * Math.cos(angle * 3.141592653589793238462643383279/180));
+		y += (float) (speed * Math.sin(angle * 3.141592653589793238462643383279/180));
 
 		Matrix.translateM(modelMatrix, 0, x + 0.5f, y + 0.5f, 0.0f);
 		Matrix.rotateM(modelMatrix, 0, angle - 90, 0, 0, 1);
