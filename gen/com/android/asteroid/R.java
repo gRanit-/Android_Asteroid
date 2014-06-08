@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.example.ticktacktoe;
+package com.android.asteroid;
 
 public final class R {
     public static final class attr {

@@ -1,4 +1,6 @@
-package com.example.ticktacktoe;
+package com.android.asteroid;
+
+import com.android.asteroid.R;
 
 import android.app.Activity;
 import android.content.Context;

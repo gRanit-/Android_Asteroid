@@ -1,4 +1,4 @@
-package com.example.ticktacktoe;
+package com.android.asteroid;
 
 public class Asteroid {
 	private float []modelViewMatrix=new float[16];

@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package com.example.ticktacktoe;
+package com.android.asteroid;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;
