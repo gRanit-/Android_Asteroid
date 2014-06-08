@@ -53,9 +53,9 @@ public class MyGLSurfaceView extends GLSurfaceView {
 				float differenceX = Math.abs(x - prevX);
 				float differenceY = Math.abs(y - prevY);
 				if (differenceX > differenceY - 10) {
-					if (differenceX > 10)
+					if (differenceX > 70)
 						swipeLeft();
-					else if (differenceX < 10)
+					else if (differenceX < 70)
 						swipeRight();
 					else
 						renderer.shoot();

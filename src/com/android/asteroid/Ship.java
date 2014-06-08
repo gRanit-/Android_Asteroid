@@ -13,29 +13,30 @@ import android.opengl.Matrix;
 public class Ship {
 	public float x = 0.0f;
 	public float y = 0.0f;
-	private float[] model;
-	public float scale=0.25f;
+	public float[] model;
+	public float scale = 0.25f;
 	public float[] modelMatrix = new float[16];
 	public float[] projectionMatrix = new float[16];
 	public float angle = 90.0f;
-	private FloatBuffer vertexBuffer;
-	private ShortBuffer drawListBuffer;
-	public float speed = 0.07f;
-	//LinkedList <Bullet>list=new LinkedList<Bullet>();
+	public FloatBuffer vertexBuffer;
+	public ShortBuffer drawListBuffer;
+	public float speed = 0.08f;
+	public boolean crashed=false;
+	// LinkedList <Bullet>list=new LinkedList<Bullet>();
 
-	private CopyOnWriteArrayList<Bullet> list = new CopyOnWriteArrayList<Bullet>();
-	private short drawOrder[];
+	public CopyOnWriteArrayList<Bullet> list = new CopyOnWriteArrayList<Bullet>();
+	public short drawOrder[];
 
-	float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
+	public float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
 	int vsh, fsh;
-	int program;
-	private final String vertexShaderCode =
+	public int program;
+	public final String vertexShaderCode =
 
 	"uniform mat4 uMVPMatrix;" + "attribute vec4 vPosition;" + "void main() {" +
 
 	"  gl_Position = uMVPMatrix * vPosition;" + "}";
 
-	private final String fragmentShaderCode = "precision mediump float;"
+	public final String fragmentShaderCode = "precision mediump float;"
 			+ "uniform vec4 vColor;" + "void main() {"
 			+ "  gl_FragColor = vColor;" + "}";
 
@@ -44,24 +45,53 @@ public class Ship {
 
 	}
 
+	Ship(int program) {
+		this.program = program;
+		float[] test = {
+
+		0.5f , 0.75f , 0.0f, 0.0f, 0.0f , 0.0f, 0.5f ,
+				0.5f , 0.0f,
+
+				0.5f , 0.75f , 0.0f, 1.0f, 0.0f , 0.0f, 0.5f ,
+				0.5f , 0.0f,
+
+		};
+		short[] t = { 0, 1, 2, 3, 4, 5, 6 };
+		drawOrder = t;
+		this.model = test;
+		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(
+		// (# of coordinate values * 4 bytes per float)
+				test.length * 4);
+		byteBuffer = byteBuffer.order(ByteOrder.nativeOrder());
+		vertexBuffer = byteBuffer.asFloatBuffer();
+		vertexBuffer.put(model);
+		vertexBuffer.position(0);
+
+		ByteBuffer dlb = ByteBuffer.allocateDirect(
+		// (# of coordinate values * 2 bytes per short)
+				drawOrder.length * 2);
+		dlb.order(ByteOrder.nativeOrder());
+		drawListBuffer = dlb.asShortBuffer();
+		drawListBuffer.put(drawOrder);
+		drawListBuffer.position(0);
+	}
+
 	Ship(float x, float y) {
 		initialize(x, y);
-
+		
 	}
 
 	public void initialize(float x, float y) {
-		this.x=x;
-		this.y=y;
-		
+		this.x = x;
+		this.y = y;
+
 		float[] test = {
 
-		0.5f + x, 0.75f + y, 0.0f,
-		0.0f + x, 0.0f + y, 0.0f,
-		0.5f + x, 0.5f + y, 0.0f,
-		
-		0.5f + x, 0.75f + y, 0.0f,
-		1.0f + x, 0.0f + y, 0.0f
-		, 0.5f + x, 0.5f + y, 0.0f,
+		0.5f + x, 0.75f + y, 0.0f, 0.0f + x, 0.0f + y, 0.0f, 0.5f + x,
+				0.5f + y, 0.0f,
+
+				0.5f + x, 0.75f + y, 0.0f, 1.0f + x, 0.0f + y, 0.0f, 0.5f + x,
+				0.5f + y, 0.0f,
 
 		};
 		short[] t = { 0, 1, 2, 3, 4, 5, 6 };
@@ -95,23 +125,26 @@ public class Ship {
 		GLES20.glLinkProgram(program);
 
 	}
+	
+	
 
 	public void shoot() {
 		if (list.size() <= 20) {
 
-			Bullet b = new Bullet(program, angle, speed+0.09f);
+			Bullet b = new Bullet(program, angle, speed + 0.09f);
 			b.initialize(x, y);
+			b.scale=scale;
+			b.color=color;
 			b.projectionMatrix = this.projectionMatrix;
 			list.add(b);
 		}
 	}
 
 	public void draw() {
-		
-		
-		Bullet temp=null;
-		if(list.size()>0)
-			temp=list.get(0);
+
+		Bullet temp = null;
+		if (list.size() > 0)
+			temp = list.get(0);
 		if (temp != null) {
 			if (System.currentTimeMillis() - temp.timestamp >= 2000)
 				list.remove(0);
@@ -123,8 +156,10 @@ public class Ship {
 
 		Matrix.scaleM(modelMatrix, 0, scale, scale, 0);
 
-		x += (float) (speed * Math.cos(angle * 3.141592653589793238462643383279/180));
-		y += (float) (speed * Math.sin(angle * 3.141592653589793238462643383279/180));
+		x += (float) (speed * Math
+				.cos(angle * 3.141592653589793238462643383279 / 180));
+		y += (float) (speed * Math
+				.sin(angle * 3.141592653589793238462643383279 / 180));
 
 		Matrix.translateM(modelMatrix, 0, x + 0.5f, y + 0.5f, 0.0f);
 		Matrix.rotateM(modelMatrix, 0, angle - 90, 0, 0, 1);

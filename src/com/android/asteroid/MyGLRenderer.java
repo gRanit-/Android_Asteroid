@@ -1,6 +1,8 @@
 package com.android.asteroid;
 
 import java.util.LinkedList;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -14,18 +16,28 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 	private static final String TAG = "MyGLRenderer";
 	private float[] modelViewMatrix = new float[16];
 	private float[] projectionViewMatrix = new float[16];
-	private LinkedList <Enemy> enemyList=new LinkedList<Enemy>();
+	private float width=0.0f;
+	private float height=0.0f;
+	//public CopyOnWriteArrayList<Enemy> enemiesList = new CopyOnWriteArrayList<Enemy>();
 	private float ratio = 1.0f;
-
-
-	private Ship ship;
-
-
+	private Random random=new Random();
+	
+	public Ship ship=new Ship();
+	public Enemy enemy1;
+	public Enemy enemy2;
+	//MyGLRenderer(){
+	//	super();
+	//	randomEnemy();
+	//}
 	@Override
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		
 		ship = new Ship();
+		//enemy1=randomEnemy();
+		//enemy2=randomEnemy();
+		enemy1=new Enemy(ship.x,ship.y,ship.angle,this,ship.program);
 		// square=new Square();
 
 	}
@@ -40,9 +52,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 					| GLES20.GL_DEPTH_BUFFER_BIT);
 
 			ship.projectionMatrix = this.projectionViewMatrix;
-
-
 			ship.draw();
+			
+			//for(Enemy enemy:enemiesList){
+				enemy1.projectionMatrix = this.projectionViewMatrix;
+				enemy1.updatePosition();
+				enemy1.draw();
+				//enemy2.projectionMatrix = this.projectionViewMatrix;
+				//enemy2.updatePosition();
+				//enemy2.draw();
+			//}
+			//
+			//ship.x=0.0f;
+			//ship.y=0.0f;
+			
+			//
 
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -52,9 +76,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
-
+		this.width=width;
+		this.height=height;
 		GLES20.glViewport(0, 0, width, height);
-
+		System.out.println(width);
 		ratio = (float) width / height;
 
 		Matrix.frustumM(projectionViewMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
@@ -87,21 +112,33 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 	 * @throws  
 	 */
 	
-	public void randomEnemy(){
+	public Enemy randomEnemy(){
+		float x=0.0f;
+		float y=0.0f;
+		if(random.nextInt()%2==0){
+			x=0;y=1.0f;}
+		else {x=width;y=-1.0f;}
 		
 		
+			return (new Enemy(ship.x+x,ship.y+y,ship.angle,this,ship.program));
+		
+
+	}
+	public float getShipAngle(){
+		return ship.angle;
 	}
 	public void shoot() {
 		ship.shoot();
 	}
 	public void right(float a) {
 		ship.angle += a;
+		
 
 	}
 
 	public void left(float a) {
 		ship.angle -= a;
-
+		
 	}
 
 }

@@ -1,13 +1,15 @@
 package com.android.asteroid;
 
-public class Asteroid {
+public class AsteroidRock {
 	private float []modelViewMatrix=new float[16];
 	private float [][]model;
 	
-	Asteroid(){
+	
+	
+	AsteroidRock(){
 		
 	}
-	Asteroid(float x, float y){
+	AsteroidRock(float x, float y){
 		
 	}
 	public void initialize(){

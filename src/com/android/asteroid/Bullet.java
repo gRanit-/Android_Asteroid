@@ -23,7 +23,7 @@ public class Bullet {
 	public float[] projectionMatrix = new float[16];
 	public float[] modelMatrix = new float[16];
 	private float[] model=new float[4];
-	private float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
+	public float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
 
 	Bullet(int program, float angle, float speed) {
 		this.program = program;
