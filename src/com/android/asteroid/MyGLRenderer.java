@@ -18,7 +18,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 	private float[] projectionViewMatrix = new float[16];
 	private float width=0.0f;
 	private float height=0.0f;
-	//public CopyOnWriteArrayList<Enemy> enemiesList = new CopyOnWriteArrayList<Enemy>();
+	public CopyOnWriteArrayList<Enemy> enemiesList = new CopyOnWriteArrayList<Enemy>();
 	private float ratio = 1.0f;
 	private Random random=new Random();
 	
@@ -35,9 +35,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		
 		ship = new Ship();
-		//enemy1=randomEnemy();
-		//enemy2=randomEnemy();
-		enemy1=new Enemy(ship.x,ship.y,ship.angle,this,ship.program);
+		for(int i=0;i<3;i++)
+			enemiesList.add(randomEnemy());
+		//enemy1=new Enemy(ship.x,ship.y,ship.angle,this,ship.program);
+		//enemy2=new Enemy(ship.x+2,ship.y-1,ship.angle,this,ship.program);
 		// square=new Square();
 
 	}
@@ -54,14 +55,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 			ship.projectionMatrix = this.projectionViewMatrix;
 			ship.draw();
 			
-			//for(Enemy enemy:enemiesList){
-				enemy1.projectionMatrix = this.projectionViewMatrix;
-				enemy1.updatePosition();
-				enemy1.draw();
+			for(Enemy enemy:enemiesList){
+				enemy.projectionMatrix = this.projectionViewMatrix;
+				enemy.updatePosition();
+				enemy.draw();
 				//enemy2.projectionMatrix = this.projectionViewMatrix;
 				//enemy2.updatePosition();
 				//enemy2.draw();
-			//}
+			}
 			//
 			//ship.x=0.0f;
 			//ship.y=0.0f;
@@ -115,14 +116,26 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 	public Enemy randomEnemy(){
 		float x=0.0f;
 		float y=0.0f;
-		if(random.nextInt()%2==0){
-			x=0;y=1.0f;}
-		else {x=width;y=-1.0f;}
 		
+		x=randomInt(-10,10);y=randomInt(-5,5);
+		//else {x=random.nextInt()%10;y=-5.0f;}
+		Enemy e=new Enemy(ship.x+x,ship.y+y,ship.angle,this,ship.program);
 		
-			return (new Enemy(ship.x+x,ship.y+y,ship.angle,this,ship.program));
+		float []colors=new float[4];
+		for(int i=0;i<3;i++){
+			float tempColor=0.0f;
+			while(tempColor<0.2f || tempColor>0.8f)
+				tempColor=random.nextFloat();
+			colors[i]=tempColor;
+		}
+		colors[3]=1.0f;	
+		e.color=colors;
+			return e;
 		
 
+	}
+	public int randomInt(int min, int max){
+		return min + (int)(Math.random() * ((max - min) + 1));
 	}
 	public float getShipAngle(){
 		return ship.angle;

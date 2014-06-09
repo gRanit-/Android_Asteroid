@@ -30,6 +30,7 @@ public class MainActivity extends Activity{
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+		
 		surfaceView = new MyGLSurfaceView(this);
 		setContentView(surfaceView);
 	}

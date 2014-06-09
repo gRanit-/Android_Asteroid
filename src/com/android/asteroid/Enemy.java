@@ -13,8 +13,8 @@ public class Enemy extends Ship {
 		//super(x,y);
 		//this.angle=angle;
 		
-		float []temp={ 1.0f, 0.709803922f, 0.898039216f, 1.0f };
-		this.color=temp;
+		//float []temp={ 1.0f, 0.709803922f, 0.898039216f, 1.0f };
+		//this.color=temp;
 		this.program=program;
 		this.renderer=renderer;
 		this.scale=0.15f;
@@ -25,13 +25,13 @@ public class Enemy extends Ship {
 			
 			float[] test = {
 
-			0.5f + x, 0.75f + y, 0.0f,
-			0.0f + x, 0.0f + y, 0.0f,
-			0.5f + x, 0.5f + y, 0.0f,
+			0.5f, 0.75f, 0.0f,
+			0.0f, 0.0f , 0.0f,
+			0.5f , 0.5f , 0.0f,
 			
-			0.5f + x, 0.75f + y, 0.0f,
-			1.0f + x, 0.0f + y, 0.0f
-			, 0.5f + x, 0.5f + y, 0.0f,
+			0.5f , 0.75f , 0.0f,
+			1.0f , 0.0f , 0.0f
+			, 0.5f, 0.5f , 0.0f,
 
 			};
 			short[] t = { 0, 1, 2, 3, 4, 5, 6 };
@@ -63,7 +63,7 @@ public class Enemy extends Ship {
 		if(diff>1000){
 		float diffX=renderer.ship.x-this.x;
 		float diffY=renderer.ship.y-this.y;
-		this.angle=(float) ((float) Math.atan2(diffY, diffX)*180/3.141592653589793238462643383279)+(float)Math.random();
+		this.angle=(float) ((float) Math.atan2(diffY, diffX)*180/3.141592653589793238462643383279)+renderer.randomInt(-5, 5);
 		//this.angle=renderer.ship.angle;
 		
 		timestamp=System.currentTimeMillis();
