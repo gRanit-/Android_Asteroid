@@ -8,5 +8,7 @@
     <string name="play">Play Asteroid</string>
     <string name="ranking">Ranking</string>
     <string name="title_activity_ranking">Ranking</string>
+    <string name="points">0</string>
+    <string name="dead">You are dead!</string>
 
 </resources>

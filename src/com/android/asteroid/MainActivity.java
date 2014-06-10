@@ -1,28 +1,35 @@
 package com.android.asteroid;
 
-import com.android.asteroid.R;
+
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity{
 	private MyGLSurfaceView surfaceView;
 	
+	
+	public void changeText(String text){
+		((TextView) findViewById(R.id.textView1)).setText(text);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
+		
 		super.onCreate(savedInstanceState);
+		
 		// int []displaySize=getDisplaySize(this);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -32,7 +39,25 @@ public class MainActivity extends Activity{
 
 		
 		surfaceView = new MyGLSurfaceView(this);
-		setContentView(surfaceView);
+		
+		//setContentView(surfaceView);
+	
+		setContentView(R.layout.activity_main);
+		FrameLayout l = (FrameLayout) findViewById(R.id.visualizer);
+		//surfaceView.renderer.textView=(TextView) findViewById(R.id.textView1);
+		l.addView(surfaceView,0);
+	}
+	
+	public void showPoints(int points){
+		Toast.makeText(getApplicationContext(), Integer.toString(points),
+				   Toast.LENGTH_SHORT).show();
+		
+	}
+	public void goToMainMenu(int points){
+		Intent intent =new Intent(getApplicationContext(),Ranking.class);
+		intent.putExtra("Points", points);
+		
+		startActivity(intent);
 	}
 
 	@Override

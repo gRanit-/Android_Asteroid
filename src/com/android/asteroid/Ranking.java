@@ -1,21 +1,43 @@
 package com.android.asteroid;
 
-import android.os.Bundle;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 public class Ranking extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_ranking);
+		
 		// Show the Up button in the action bar.
-		setupActionBar();
+		//setupActionBar();
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
+		setContentView(R.layout.activity_ranking);
+		
+		Intent i=getIntent();
+		int p=i.getIntExtra("points", 0);
+		TextView tv=(TextView)findViewById(R.id.rankTextView);
+		tv.setText("You are dead! Your score: "+Integer.toString(p));
+		
+		
+		
 	}
 
 	/**
@@ -31,7 +53,7 @@ public class Ranking extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.ranking, menu);
+		//getMenuInflater().inflate(R.menu.ranking, menu);
 		return true;
 	}
 
@@ -50,6 +72,35 @@ public class Ranking extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	class SQLiteManager extends SQLiteOpenHelper{
+		private static final String SQL_CREATE_ENTRIES =
+			    "CREATE TABLE " + "RANKING" + " (" +
+			    "ID" + " INTEGER PRIMARY KEY," +
+			    "POINTS, INTEGER"+
+			   
+			  
+			    " )";
+
+			private static final String SQL_DELETE_ENTRIES =
+			    "DROP TABLE IF EXISTS " + "RANKING";
+		 public static final int DATABASE_VERSION = 1;
+		 public static final String DATABASE_NAME = "Players.db";
+		 public SQLiteManager(Context context) {
+		        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		    }
+		 public void onCreate(SQLiteDatabase db) {
+		        db.execSQL(SQL_CREATE_ENTRIES);
+		    }
+		    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		        // This database is only a cache for online data, so its upgrade policy is
+		        // to simply to discard the data and start over
+		        db.execSQL(SQL_DELETE_ENTRIES);
+		        onCreate(db);
+		    }
+		    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		        onUpgrade(db, oldVersion, newVersion);
+		    } 
 	}
 
 }

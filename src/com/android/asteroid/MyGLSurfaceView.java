@@ -12,10 +12,11 @@ public class MyGLSurfaceView extends GLSurfaceView {
 	MyGLRenderer renderer;
 	private float prevX = 0;
 	private float prevY = 0;
-
+	public Context context;
 	public MyGLSurfaceView(Context context) {
 
 		super(context);
+		this.context=context;
 		/*
 		 * this.setOnTouchListener(new OnSwipeTouchListener(context) { public
 		 * void onSwipeTop() {
@@ -31,15 +32,19 @@ public class MyGLSurfaceView extends GLSurfaceView {
 		// TODO Auto-generated constructor stub
 		setEGLContextClientVersion(2);
 		renderer = new MyGLRenderer();
+		renderer.surface=this;
 		setRenderer((Renderer) renderer);
+		//renderer.surface=this;
 		// setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 
 	public MyGLSurfaceView(Context context, int x, int y) {
 		super(context);
+		this.context=context;
 		// TODO Auto-generated constructor stub
 		setEGLContextClientVersion(2);
 		renderer = new MyGLRenderer();
+		renderer.surface=this;
 		setRenderer((Renderer) renderer);
 	}
 
@@ -50,19 +55,19 @@ public class MyGLSurfaceView extends GLSurfaceView {
 			float x = e.getX();
 			float y = e.getY();
 			if (e.getAction() == MotionEvent.ACTION_MOVE) {
-				float differenceX = Math.abs(x - prevX);
-				float differenceY = Math.abs(y - prevY);
-				if (differenceX > differenceY - 10) {
-					if (differenceX > 70)
+				float differenceX = x - prevX;
+				float differenceY = y - prevY;
+				
+					if (differenceX < -2)
 						swipeLeft();
-					else if (differenceX < 70)
+					else if (differenceX > 2)
 						swipeRight();
 					else
 						renderer.shoot();
-				} else {
+				//} else {
 					prevY = prevX = 0;
-					renderer.shoot();
-				}
+					//renderer.shoot();
+				//}
 				prevX = x;
 				prevY = y;
 			}else if (e.getAction() == MotionEvent.ACTION_DOWN){renderer.shoot();}
@@ -79,13 +84,13 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
 	public void swipeRight() {
 
-		renderer.right(5);
+		renderer.right(10);
 
 	}
 
 	public void swipeLeft() {
 
-		renderer.left(5);
+		renderer.left(10);
 
 	}
 
