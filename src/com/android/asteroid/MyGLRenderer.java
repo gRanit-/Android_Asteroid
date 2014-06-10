@@ -127,9 +127,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 					float[] bulletPoint1 = { 0.5f + b.x, 0.5f + b.y };
 					float[] bulletPoint2 = { 0.5f + b.x, 0.75f + b.y };
 					float[] O = { 0.5f, 0.5f };
-					// float []O1={0.5f,0.8f};
+					float []O1={0.5f,0.75f};
 					bulletPoint1 = rotate_point(O, b.angle - 90, bulletPoint1);
-					bulletPoint2 = rotate_point(O, b.angle - 90, bulletPoint2);
+					bulletPoint2 = rotate_point(O1, b.angle - 90, bulletPoint2);
 
 					A = rotate_point(O, d.angle - 90, A);
 					B = rotate_point(O, d.angle - 90, B);
@@ -156,7 +156,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 							System.out.println("Player Killed");
 							((MainActivity) surface.context).goToMainMenu(points);
 							//player = new Ship();
-							//surface.context.goToMainMenu();
+							//surface.context.goToMainMenu(points);
 							try {
 								this.finalize();
 							} catch (Throwable e) {

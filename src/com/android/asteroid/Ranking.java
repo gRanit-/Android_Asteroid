@@ -32,7 +32,7 @@ public class Ranking extends Activity {
 		setContentView(R.layout.activity_ranking);
 		
 		Intent i=getIntent();
-		int p=i.getIntExtra("points", 0);
+		int p=i.getIntExtra("Points", 0);
 		TextView tv=(TextView)findViewById(R.id.rankTextView);
 		tv.setText("You are dead! Your score: "+Integer.toString(p));
 		
@@ -43,13 +43,13 @@ public class Ranking extends Activity {
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	/*@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void setupActionBar() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
-
+*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
