@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -18,28 +19,26 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 	private float[] projectionViewMatrix = new float[16];
 	private float width=0.0f;
 	private float height=0.0f;
-	public CopyOnWriteArrayList<Enemy> enemiesList = new CopyOnWriteArrayList<Enemy>();
+	//public CopyOnWriteArrayList<Ship> shipsList = new CopyOnWriteArrayList<Ship>();
+	int MAX_PLAYERS=4;
+	Ship[]shipsList=new Ship[MAX_PLAYERS];
 	private float ratio = 1.0f;
 	private Random random=new Random();
 	
-	public Ship ship=new Ship();
-	public Enemy enemy1;
-	public Enemy enemy2;
-	//MyGLRenderer(){
-	//	super();
-	//	randomEnemy();
-	//}
+	public Ship player;
+	//public Enemy enemy1;
+	//public Enemy enemy2;
+
 	@Override
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-		// Set the background frame color
+
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		
-		ship = new Ship();
+		player = new Ship();
+		shipsList[0]=(player);
 		for(int i=0;i<3;i++)
-			enemiesList.add(randomEnemy());
-		//enemy1=new Enemy(ship.x,ship.y,ship.angle,this,ship.program);
-		//enemy2=new Enemy(ship.x+2,ship.y-1,ship.angle,this,ship.program);
-		// square=new Square();
+			shipsList[i+1]=(randomEnemy());
+
 
 	}
 
@@ -52,22 +51,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT
 					| GLES20.GL_DEPTH_BUFFER_BIT);
 
-			ship.projectionMatrix = this.projectionViewMatrix;
-			ship.draw();
+			//ship.projectionMatrix = this.projectionViewMatrix;
+			//ship.draw();
 			
-			for(Enemy enemy:enemiesList){
-				enemy.projectionMatrix = this.projectionViewMatrix;
-				enemy.updatePosition();
-				enemy.draw();
-				//enemy2.projectionMatrix = this.projectionViewMatrix;
-				//enemy2.updatePosition();
-				//enemy2.draw();
+			
+			checkForDamages();
+			for(Ship ship:shipsList){
+				ship.projectionMatrix = this.projectionViewMatrix;
+				ship.updatePosition();
+				ship.draw();
 			}
-			//
-			//ship.x=0.0f;
-			//ship.y=0.0f;
 			
-			//
 
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -86,7 +80,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 		Matrix.frustumM(projectionViewMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
 
 	}
-
+	
 	public static void checkGlError(String glOperation) {
 		int error;
 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
@@ -97,29 +91,118 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 	public static int loadShader(int type, String shaderCode) {
 
-		// create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-		// or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
 		int shader = GLES20.glCreateShader(type);
 
-		// add the source code to the shader and compile it
+
 		GLES20.glShaderSource(shader, shaderCode);
 		GLES20.glCompileShader(shader);
 
 		return shader;
 	}
 
-	/**
-	 * Sets the rotation angle of the square shape (mSquare).
-	 * @throws  
-	 */
+	public void checkForDamages(){
+		//LinkedList<Ship> l=new LinkedList<Ship>();
+		
+		//int listSize=shipsList.length;
+		
+		for(int i=0;i<MAX_PLAYERS;i++){
+			Ship s=shipsList[i];
+			for(Bullet b :s.list)
+				//for(Ship d :shipsList){
+				for(int k=0;k<MAX_PLAYERS;k++){
+					if(k==i)
+						continue;
+				Ship d=shipsList[k];
+					//if(l.contains(d))
+						//continue;
+					if(s==d)
+						continue;
+					float []A={0.5f+d.x,d.y+0.75f};
+					float []B={d.x,d.y};
+					float []C={+0.5f+d.x,d.y+0.5f};
+					
+					float []D={+1.0f+d.x,d.y+0.0f};
+					
+					float[]bulletPoint1={0.5f+b.x,0.5f+b.y};
+					float[]bulletPoint2={0.5f+b.x,0.75f+b.y};
+					float []O={0.5f,0.5f};
+					//float []O1={0.5f,0.8f};
+					bulletPoint1=rotate_point(O,b.angle-90,bulletPoint1);
+					bulletPoint2=rotate_point(O,b.angle-90,bulletPoint2);
+					
+					A=rotate_point(O,d.angle-90,A);
+					B=rotate_point(O,d.angle-90,B);
+					C=rotate_point(O,d.angle-90,C);
+					D=rotate_point(O,d.angle-90,D);
+					/*A[0]+=d.x;
+					A[1]+=d.y;
+					B[0]+=d.x;
+					B[1]+=d.y;
+					C[0]+=d.x;
+					C[1]+=d.y;
+					D[0]+=d.x;
+					D[1]+=d.y;
+					bulletPoint[0]+=b.x;
+					bulletPoint[1]+=b.y;*/
+					if((PointInTriangle(bulletPoint1,A,B,C) || PointInTriangle(bulletPoint1,A,C,D))||(PointInTriangle(bulletPoint2,A,B,C) || PointInTriangle(bulletPoint2,A,C,D))){
+						System.out.println("Crashed");
+						if(player==d){
+							System.out.println("Player Killed");
+							player=new Ship();
+							shipsList[k]=null;
+							shipsList[k]=(player);
+						}else{
+							shipsList[k]=null;
+							shipsList[k]=(randomEnemy());
+						}
+						
+						}
+					
+				}
+			
+		}
+		
+	}
+	
+	float[] rotate_point(float[]O,float angle,float[]P)
+	{
+		float ox=O[0];
+		float oy=O[1];
+		
+		float px=P[0];
+		float py=P[1];
+		
+		float newpx = (float) (Math.cos(angle) * (px-ox) - Math.sin(angle) * (py-oy) + ox);
+
+		float newpy = (float) (Math.sin(angle) * (px-ox) + Math.cos(angle) * (py-oy) + oy);
+		float[] temp={newpx,newpy};
+		return temp;
+	}
+	float sign(float[]p1,float[]p2, float[] p3)
+	{
+	  return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);
+	}
+
+	boolean PointInTriangle(float[] pt, float[] v1, float[] v2, float[] v3)
+	{
+	  
+		boolean b1,b2, b3;
+
+	  b1 = sign(pt, v1, v2) < 0.0f;
+	  b2 = sign(pt, v2, v3) < 0.0f;
+	  b3 = sign(pt, v3, v1) < 0.0f;
+
+	  return ((b1 == b2) && (b2 == b3));
+	}
 	
 	public Enemy randomEnemy(){
 		float x=0.0f;
 		float y=0.0f;
 		
-		x=randomInt(-10,10);y=randomInt(-5,5);
-		//else {x=random.nextInt()%10;y=-5.0f;}
-		Enemy e=new Enemy(ship.x+x,ship.y+y,ship.angle,this,ship.program);
+		x=randomInt(-20,20);
+		y=randomInt(-10,10);
+
+		Enemy e=new Enemy(player.x+x,player.y+y,player.angle,this,player.program);
 		
 		float []colors=new float[4];
 		for(int i=0;i<3;i++){
@@ -138,19 +221,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 		return min + (int)(Math.random() * ((max - min) + 1));
 	}
 	public float getShipAngle(){
-		return ship.angle;
+		return player.angle;
 	}
 	public void shoot() {
-		ship.shoot();
+		player.shoot();
 	}
 	public void right(float a) {
-		ship.angle += a;
+		player.angle += a;
 		
 
 	}
 
 	public void left(float a) {
-		ship.angle -= a;
+		player.angle -= a;
 		
 	}
 

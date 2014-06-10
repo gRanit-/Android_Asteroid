@@ -11,10 +11,10 @@ import android.opengl.Matrix;
 public class Bullet {
 	//public final float PI =;
 	private int program = 0;
-	private float angle=0.0f;
+	public float angle=90.0f;
 	private float speed=0.0f;
-	private float x = 0.0f;
-	private float y = 0.0f;
+	public float x = 0.0f;
+	public float y = 0.0f;
 	private FloatBuffer vertexBuffer;
 	private ShortBuffer drawListBuffer;
 	public float scale=0.25f;
@@ -34,9 +34,12 @@ public class Bullet {
 	public void initialize(float x, float y) {
 		this.x=x;
 		this.y=y;
-		float[] vector = {0.5f, 0.75f, 0.0f,
-						
-				0.5f, 0.5f, 0.0f, };
+		float[] vector = {
+					
+				0.5f, 0.75f, 0.0f,
+				0.5f,0.5f,0.0f,	
+				//0.5f, 1.05f, 0.0f
+		};
 		short[] t = { 0, 1};
 		drawOrder = t;
 		this.model = vector;
@@ -74,8 +77,8 @@ public class Bullet {
 		Matrix.translateM(modelMatrix, 0, x+0.5f , y+0.5f, 0.0f);
 		Matrix.rotateM(modelMatrix, 0, angle-90, 0, 0, 1);
 		Matrix.translateM(modelMatrix, 0, -0.5f , -0.5f, 0.0f);
-
-	
+		
+		//Matrix.translateM(modelMatrix, 0, x,y, 0.0f);
 		
 		float[] mvpMatrix = new float[16];
 

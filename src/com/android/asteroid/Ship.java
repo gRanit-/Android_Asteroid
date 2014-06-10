@@ -21,9 +21,9 @@ public class Ship {
 	public FloatBuffer vertexBuffer;
 	public ShortBuffer drawListBuffer;
 	public float speed = 0.08f;
-	public boolean crashed=false;
+	public boolean crashed = false;
 	// LinkedList <Bullet>list=new LinkedList<Bullet>();
-
+	public CopyOnWriteArrayList<Ship> enemiesList = new CopyOnWriteArrayList<Ship>();
 	public CopyOnWriteArrayList<Bullet> list = new CopyOnWriteArrayList<Bullet>();
 	public short drawOrder[];
 
@@ -45,15 +45,24 @@ public class Ship {
 
 	}
 
+	public void updatePosition() {
+	};
+
 	Ship(int program) {
 		this.program = program;
 		float[] test = {
 
-		0.5f , 0.75f , 0.0f, 0.0f, 0.0f , 0.0f, 0.5f ,
-				0.5f , 0.0f,
+		0.5f, 0.75f, 0.0f,
 
-				0.5f , 0.75f , 0.0f, 1.0f, 0.0f , 0.0f, 0.5f ,
-				0.5f , 0.0f,
+		0.0f, 0.0f, 0.0f,
+
+		0.5f, 0.5f, 0.0f,
+
+		0.5f, 0.75f, 0.0f,
+
+		1.0f, 0.0f, 0.0f,
+
+		0.5f, 0.5f, 0.0f,
 
 		};
 		short[] t = { 0, 1, 2, 3, 4, 5, 6 };
@@ -78,7 +87,7 @@ public class Ship {
 
 	Ship(float x, float y) {
 		initialize(x, y);
-		
+
 	}
 
 	public void initialize(float x, float y) {
@@ -88,10 +97,8 @@ public class Ship {
 		float[] test = {
 
 		0.5f + x, 0.75f + y, 0.0f, 0.0f + x, 0.0f + y, 0.0f, 0.5f + x,
-				0.5f + y, 0.0f,
-
-				0.5f + x, 0.75f + y, 0.0f, 1.0f + x, 0.0f + y, 0.0f, 0.5f + x,
-				0.5f + y, 0.0f,
+				0.5f + y, 0.0f, 0.5f + x, 0.75f + y, 0.0f, 1.0f + x, 0.0f + y,
+				0.0f, 0.5f + x, 0.5f + y, 0.0f,
 
 		};
 		short[] t = { 0, 1, 2, 3, 4, 5, 6 };
@@ -125,41 +132,46 @@ public class Ship {
 		GLES20.glLinkProgram(program);
 
 	}
-	
-	
 
 	public void shoot() {
+		if(!crashed)
 		if (list.size() <= 20) {
 
 			Bullet b = new Bullet(program, angle, speed + 0.09f);
 			b.initialize(x, y);
-			b.scale=scale;
-			b.color=color;
+			b.scale = scale;
+			b.color = color;
 			b.projectionMatrix = this.projectionMatrix;
 			list.add(b);
 		}
 	}
 
 	public void draw() {
+		if (crashed)
+			color[3] -= 0.2;
+		else {
+			Bullet temp = null;
 
-		Bullet temp = null;
-		if (list.size() > 0)
-			temp = list.get(0);
-		if (temp != null) {
-			if (System.currentTimeMillis() - temp.timestamp >= 2000)
-				list.remove(0);
-			for (Bullet bullet : list)
-				bullet.draw();
+			if (list.size() > 0)
+				temp = list.get(0);
+			if (temp != null) {
+				if (System.currentTimeMillis() - temp.timestamp >= 2000)
+					list.remove(0);
+				for (Bullet bullet : list)
+					bullet.draw();
+			}
+
+			// ////////////////////////////
+			x += (float) (speed * Math
+					.cos(angle * 3.141592653589793238462643383279 / 180));
+			y += (float) (speed * Math
+					.sin(angle * 3.141592653589793238462643383279 / 180));
+			// ///////////////////////////
 		}
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.setLookAtM(modelMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
 		Matrix.scaleM(modelMatrix, 0, scale, scale, 0);
-
-		x += (float) (speed * Math
-				.cos(angle * 3.141592653589793238462643383279 / 180));
-		y += (float) (speed * Math
-				.sin(angle * 3.141592653589793238462643383279 / 180));
 
 		Matrix.translateM(modelMatrix, 0, x + 0.5f, y + 0.5f, 0.0f);
 		Matrix.rotateM(modelMatrix, 0, angle - 90, 0, 0, 1);
